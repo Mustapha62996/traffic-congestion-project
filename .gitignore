@@ -1,3 +1,30 @@
 artifacts/
 __pycache__/
 *.pyc
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/.npm-cache/
+
+# Java
+backend/target/
+
+# Logs
+*.log
+
+# Generated artifacts
+artifacts/report_render_with_screens/
+artifacts/*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

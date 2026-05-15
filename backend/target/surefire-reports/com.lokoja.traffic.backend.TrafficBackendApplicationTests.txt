@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.lokoja.traffic.backend.TrafficBackendApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 24.85 s -- in com.lokoja.traffic.backend.TrafficBackendApplicationTests
