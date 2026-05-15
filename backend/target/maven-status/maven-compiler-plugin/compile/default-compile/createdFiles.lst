@@ -1,0 +1,17 @@
+com\lokoja\traffic\backend\config\MlServiceProperties.class
+com\lokoja\traffic\backend\service\MlServiceClient.class
+com\lokoja\traffic\backend\dto\BackendHealthResponse.class
+com\lokoja\traffic\backend\dto\InsightsResponse.class
+com\lokoja\traffic\backend\controller\TrafficController.class
+com\lokoja\traffic\backend\dto\TrainModelRequest.class
+META-INF\spring-configuration-metadata.json
+com\lokoja\traffic\backend\dto\TrainModelResponse.class
+com\lokoja\traffic\backend\service\MlServiceClient$1.class
+com\lokoja\traffic\backend\dto\PredictTrafficRequest.class
+com\lokoja\traffic\backend\TrafficBackendApplication.class
+com\lokoja\traffic\backend\controller\ApiExceptionHandler.class
+com\lokoja\traffic\backend\config\HttpClientConfig.class
+com\lokoja\traffic\backend\service\MlServiceClient$2.class
+com\lokoja\traffic\backend\exception\MlServiceException.class
+com\lokoja\traffic\backend\dto\PredictTrafficResponse.class
+com\lokoja\traffic\backend\service\TrafficPredictionService.class

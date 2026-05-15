@@ -1,0 +1,14 @@
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\config\HttpClientConfig.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\config\MlServiceProperties.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\controller\ApiExceptionHandler.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\controller\TrafficController.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\dto\BackendHealthResponse.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\dto\InsightsResponse.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\dto\PredictTrafficRequest.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\dto\PredictTrafficResponse.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\dto\TrainModelRequest.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\dto\TrainModelResponse.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\exception\MlServiceException.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\service\MlServiceClient.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\service\TrafficPredictionService.java
+C:\Users\USER\Desktop\traffic_congestion_project\backend\src\main\java\com\lokoja\traffic\backend\TrafficBackendApplication.java
