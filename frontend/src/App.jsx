@@ -522,7 +522,7 @@ function App() {
                 <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr] xl:items-end">
                   <div className="space-y-3">
                     <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                      Lokoja traffic decision support dashboard
+                      Lokoja Traffic Decision Support Dashboard
                     </h1>
                     <p className="max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
                       Predict traffic volume, translate it into congestion bands, and inspect the model signals
