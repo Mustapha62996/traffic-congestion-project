@@ -7,13 +7,24 @@ from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Inches, Pt
+from docx.shared import Inches, Pt, RGBColor
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 OUTPUT_PATH = PROJECT_ROOT / "Lokoja_Traffic_Congestion_Project_Report.docx"
 METADATA_PATH = PROJECT_ROOT / "artifacts" / "training_metadata.json"
 SCREENSHOT_DIR = PROJECT_ROOT / "artifacts" / "report_screenshots"
+LOGO_PATH = Path(r"C:\Users\USER\Downloads\ful-logo.jpg")
+
+STUDENT_NAME = "Alhassan Mustapha Muhammed"
+MATRIC_NUMBER = "SCI22CSC109"
+DEPARTMENT_NAME = "Computer Science"
+FACULTY_NAME = "Faculty of Computing"
+INSTITUTION_NAME = "Federal University Lokoja"
+SUPERVISOR_NAME = "Dr. A. S. Muhammed"
+PROJECT_TITLE = "TRAFFIC CONGESTION PREDICTION AND DECISION SUPPORT SYSTEM FOR LOKOJA"
+SUBMISSION_DATE = "October 2026"
+DEGREE_TITLE = "Bachelor of Science in Computer Science"
 
 
 def set_run_font(run, size=12, bold=False, italic=False):
@@ -65,11 +76,25 @@ def configure_document(doc: Document):
     style._element.rPr.rFonts.set(qn("w:ascii"), "Times New Roman")
     style._element.rPr.rFonts.set(qn("w:hAnsi"), "Times New Roman")
     style.font.size = Pt(12)
+    style.font.color.rgb = RGBColor(0, 0, 0)
 
     paragraph_format = style.paragraph_format
     paragraph_format.line_spacing = 2
     paragraph_format.space_after = Pt(0)
     paragraph_format.space_before = Pt(0)
+
+    for style_name, font_size in [("Heading 1", 14), ("Heading 2", 12), ("Heading 3", 12), ("Caption", 11)]:
+        heading_style = doc.styles[style_name]
+        heading_style.font.name = "Times New Roman"
+        heading_style._element.rPr.rFonts.set(qn("w:ascii"), "Times New Roman")
+        heading_style._element.rPr.rFonts.set(qn("w:hAnsi"), "Times New Roman")
+        heading_style.font.size = Pt(font_size)
+        heading_style.font.color.rgb = RGBColor(0, 0, 0)
+        if style_name.startswith("Heading"):
+            heading_style.font.bold = True
+        if style_name == "Caption":
+            heading_style.font.italic = True
+            heading_style.font.bold = False
 
     footer = section.footer
     footer_p = footer.paragraphs[0]
@@ -93,13 +118,26 @@ def add_paragraph(doc: Document, text: str, bold_prefix: str | None = None):
     return p
 
 
-def add_heading(doc: Document, text: str, level: int = 1):
+def add_reference(doc: Document, text: str):
     p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    p.paragraph_format.first_line_indent = Inches(-0.3)
+    p.paragraph_format.left_indent = Inches(0.5)
+    p.paragraph_format.line_spacing = 2
+    p.paragraph_format.space_after = Pt(0)
+    run = p.add_run(text)
+    set_run_font(run)
+    return p
+
+
+def add_heading(doc: Document, text: str, level: int = 1):
+    style_name = {1: "Heading 1", 2: "Heading 2", 3: "Heading 3"}.get(level, "Heading 2")
+    p = doc.add_paragraph(style=style_name)
     p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     p.paragraph_format.line_spacing = 2
     p.paragraph_format.space_before = Pt(8)
     p.paragraph_format.space_after = Pt(0)
-    style_map = {1: 14, 2: 12}
+    style_map = {1: 14, 2: 12, 3: 12}
     run = p.add_run(text)
     set_run_font(run, size=style_map.get(level, 12), bold=True)
     return p
@@ -112,6 +150,16 @@ def add_center_block(doc: Document, lines: list[str], bold_first: bool = False):
         p.paragraph_format.line_spacing = 2
         run = p.add_run(line)
         set_run_font(run, size=12, bold=bold_first and index == 0)
+
+
+def add_logo(doc: Document, image_path: Path, width_inches: float = 1.65):
+    if not image_path.exists():
+        return
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p.paragraph_format.line_spacing = 1
+    run = p.add_run()
+    run.add_picture(str(image_path), width=Inches(width_inches))
 
 
 def add_numbered_objectives(doc: Document, objectives: list[str]):
@@ -127,6 +175,96 @@ def page_break(doc: Document):
     doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
 
+def add_sequence_field(run, label: str, display_text: str = "1"):
+    fld_begin = OxmlElement("w:fldChar")
+    fld_begin.set(qn("w:fldCharType"), "begin")
+
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = f" SEQ {label} \\* ARABIC "
+
+    fld_separate = OxmlElement("w:fldChar")
+    fld_separate.set(qn("w:fldCharType"), "separate")
+
+    text = OxmlElement("w:t")
+    text.text = display_text
+
+    fld_end = OxmlElement("w:fldChar")
+    fld_end.set(qn("w:fldCharType"), "end")
+
+    run._r.append(fld_begin)
+    run._r.append(instr)
+    run._r.append(fld_separate)
+    run._r.append(text)
+    run._r.append(fld_end)
+
+
+def add_field_paragraph(doc: Document, instruction: str):
+    p = doc.add_paragraph()
+    p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    p.paragraph_format.first_line_indent = Inches(0)
+    run = p.add_run()
+    set_run_font(run)
+
+    fld_begin = OxmlElement("w:fldChar")
+    fld_begin.set(qn("w:fldCharType"), "begin")
+
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = f" {instruction} "
+
+    fld_separate = OxmlElement("w:fldChar")
+    fld_separate.set(qn("w:fldCharType"), "separate")
+
+    placeholder = OxmlElement("w:t")
+    placeholder.text = "Right-click and choose Update Field in Microsoft Word."
+
+    fld_end = OxmlElement("w:fldChar")
+    fld_end.set(qn("w:fldCharType"), "end")
+
+    run._r.append(fld_begin)
+    run._r.append(instr)
+    run._r.append(fld_separate)
+    run._r.append(placeholder)
+    run._r.append(fld_end)
+    return p
+
+
+def caption_body(caption: str, label: str) -> str:
+    prefix = f"{label} "
+    if caption.startswith(prefix) and ":" in caption:
+        return caption.split(":", 1)[1].strip()
+    return caption.strip()
+
+
+def caption_number(caption: str, label: str) -> str:
+    prefix = f"{label} "
+    if not caption.startswith(prefix):
+        return "1"
+    remainder = caption[len(prefix):]
+    number = remainder.split(":", 1)[0].strip()
+    return number if number.isdigit() else "1"
+
+
+def add_caption(doc: Document, label: str, caption: str, centered: bool = True):
+    body = caption_body(caption, label)
+    number = caption_number(caption, label)
+    caption_p = doc.add_paragraph(style="Caption")
+    caption_p.alignment = WD_ALIGN_PARAGRAPH.CENTER if centered else WD_ALIGN_PARAGRAPH.LEFT
+    caption_p.paragraph_format.first_line_indent = Inches(0)
+
+    label_run = caption_p.add_run(f"{label} ")
+    set_run_font(label_run, size=11, italic=True)
+
+    number_run = caption_p.add_run()
+    set_run_font(number_run, size=11, italic=True)
+    add_sequence_field(number_run, label, display_text=number)
+
+    text_run = caption_p.add_run(f": {body}")
+    set_run_font(text_run, size=11, italic=True)
+    return caption_p
+
+
 def add_figure(doc: Document, image_path: Path, caption: str, width_inches: float = 5.8):
     if not image_path.exists():
         return
@@ -134,10 +272,7 @@ def add_figure(doc: Document, image_path: Path, caption: str, width_inches: floa
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = p.add_run()
     run.add_picture(str(image_path), width=Inches(width_inches))
-    caption_p = doc.add_paragraph()
-    caption_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    caption_run = caption_p.add_run(caption)
-    set_run_font(caption_run, size=11, italic=True)
+    add_caption(doc, "Figure", caption, centered=True)
 
 
 def add_table(doc: Document, headers: list[str], rows: list[list[str]], column_widths: list[float] | None = None):
@@ -169,6 +304,36 @@ def add_table(doc: Document, headers: list[str], rows: list[list[str]], column_w
 
     doc.add_paragraph()
     return table
+
+
+def add_code_snippet(doc: Document, title: str, code: str):
+    title_p = doc.add_paragraph()
+    title_p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    title_p.paragraph_format.space_before = Pt(4)
+    title_p.paragraph_format.space_after = Pt(0)
+    title_run = title_p.add_run(title)
+    set_run_font(title_run, size=11, bold=True)
+
+    code_p = doc.add_paragraph()
+    code_p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    code_p.paragraph_format.first_line_indent = Inches(0)
+    code_p.paragraph_format.left_indent = Inches(0.3)
+    code_p.paragraph_format.right_indent = Inches(0.3)
+    code_p.paragraph_format.line_spacing = 1
+    code_p.paragraph_format.space_after = Pt(0)
+
+    p_pr = code_p._element.get_or_add_pPr()
+    shading = OxmlElement("w:shd")
+    shading.set(qn("w:fill"), "F3F3F3")
+    p_pr.append(shading)
+
+    run = code_p.add_run(code)
+    run.font.name = "Courier New"
+    run._element.rPr.rFonts.set(qn("w:ascii"), "Courier New")
+    run._element.rPr.rFonts.set(qn("w:hAnsi"), "Courier New")
+    run.font.size = Pt(9)
+
+    doc.add_paragraph()
 
 
 def load_training_metadata() -> dict:
@@ -210,25 +375,32 @@ def build_document():
     low_total = sum(item.get("Low", 0) for item in hourly_trends)
     top_locations = sorted(location_patterns, key=lambda item: item.get("High", 0), reverse=True)[:3]
     top_hours = sorted(hourly_trends, key=lambda item: item.get("High", 0), reverse=True)[:5]
+    row_count = dataset_profile.get("row_count", "N/A")
+    selected_model = metadata.get("selected_model", metadata.get("model_name", "the selected regression model"))
+    selected_r2 = metadata.get("r2", 0)
+    selected_mae = metadata.get("mae", 0)
+    selected_rmse = metadata.get("rmse", 0)
+    baseline_rmse = metadata.get("baseline_rmse", 0)
 
+    add_logo(doc, LOGO_PATH)
     add_center_block(
         doc,
         [
-            "TRAFFIC CONGESTION PREDICTION AND DECISION SUPPORT SYSTEM FOR LOKOJA",
+            PROJECT_TITLE,
             "",
             "An Undergraduate Project Report",
             "Submitted in Partial Fulfilment of the Requirements for the Award of the Degree of",
-            "Bachelor of Science in Computer Science",
+            DEGREE_TITLE,
             "",
-            "[Department Name]",
-            "[Faculty Name]",
-            "[Institution Name]",
+            DEPARTMENT_NAME,
+            FACULTY_NAME,
+            INSTITUTION_NAME,
             "",
             "By",
-            "[Student Full Name]",
-            "[Matriculation Number]",
+            STUDENT_NAME,
+            MATRIC_NUMBER,
             "",
-            "April 2026",
+            SUBMISSION_DATE,
         ],
         bold_first=True,
     )
@@ -238,7 +410,7 @@ def build_document():
     add_heading(doc, "CERTIFICATION")
     add_paragraph(
         doc,
-        "This is to certify that this project report titled 'Traffic Congestion Prediction and Decision Support System for Lokoja' was carried out by [Student Full Name] of [Matriculation Number] in the Department of [Department Name], [Institution Name], under the supervision of [Supervisor Name].",
+        f"This is to certify that this project report titled '{PROJECT_TITLE.title()}' was carried out by {STUDENT_NAME} of {MATRIC_NUMBER} in the Department of {DEPARTMENT_NAME}, {INSTITUTION_NAME}, under the supervision of {SUPERVISOR_NAME}.",
     )
     add_paragraph(doc, "______________________________        ______________________________")
     add_paragraph(doc, "Supervisor's Signature/Date                 Head of Department/Date")
@@ -256,7 +428,7 @@ def build_document():
     add_heading(doc, "ACKNOWLEDGEMENTS")
     add_paragraph(
         doc,
-        "I sincerely appreciate God Almighty for the strength and wisdom to complete this project. I also thank my supervisor, lecturers, family, and friends for their guidance, encouragement, and support throughout the study. Special appreciation goes to all individuals and institutions whose insights, feedback, and academic resources contributed to the successful development of this work.",
+        f"I sincerely appreciate God Almighty for the strength and wisdom to complete this project. I am especially grateful to my supervisor, {SUPERVISOR_NAME}, for guidance, encouragement, and constructive academic support throughout the study. I also thank the lecturers in the Department of {DEPARTMENT_NAME}, {FACULTY_NAME}, {INSTITUTION_NAME}, as well as my family and friends, for their support and encouragement. Special appreciation goes to all individuals and institutions whose insights, feedback, and academic resources contributed to the successful development of this work.",
     )
 
     page_break(doc)
@@ -264,29 +436,17 @@ def build_document():
     add_heading(doc, "ABSTRACT")
     add_paragraph(
         doc,
-        "Urban traffic congestion affects travel time, economic productivity, and commuter safety in Lokoja. This project presents a traffic congestion prediction and decision support system designed to estimate future traffic conditions from contextual variables such as hour of day, day of week, location, weather, road condition, road type, vehicle mix, and proximity to commercial hubs. Following supervisory guidance, the machine learning task was formulated as a regression problem in which traffic volume is predicted directly, after which predicted values are mapped into Low, Medium, and High congestion bands using dataset-derived thresholds. The system combines a React-based user interface, a Spring Boot backend API layer, and a Python machine learning service. Experimental results from the current implementation show that the selected Random Forest Regressor achieves strong predictive performance on the working synthetic dataset, with an R-squared value of 0.893. Model interpretation is supported through feature importance analysis, threshold-based congestion translation, and explanation statements that connect predicted outcomes to temporal and contextual conditions. Because the present dataset is synthetic, the results should be understood primarily as proof of concept evidence for system feasibility rather than final proof of real-world deployment readiness. The project demonstrates that a modular intelligent traffic support system can provide useful transport insights for Lokoja without requiring full route navigation capabilities.",
+        f"Urban traffic congestion affects travel time, economic productivity, and commuter safety in Lokoja. This project presents a traffic congestion prediction and decision support system designed to estimate future traffic conditions from contextual variables such as hour of day, day of week, location, weather, road condition, road type, vehicle mix, and proximity to commercial hubs. Following supervisory guidance, the machine learning task was formulated as a regression problem in which traffic volume is predicted directly, after which predicted values are mapped into Low, Medium, and High congestion bands using dataset-derived thresholds. The system combines a React-based user interface, a Spring Boot backend API layer, and a Python machine learning service. Experimental results from the current implementation show that the selected model, {selected_model}, achieves strong predictive performance on the working synthetic dataset, with an R-squared value of {selected_r2:.3f}. Model interpretation is supported through feature importance analysis, threshold-based congestion translation, and explanation statements that connect predicted outcomes to temporal and contextual conditions. Because the present dataset is synthetic, the results should be understood primarily as proof of concept evidence for system feasibility rather than final proof of real-world deployment readiness. The project demonstrates that a modular intelligent traffic support system can provide useful transport insights for Lokoja without requiring full route navigation capabilities.",
     )
 
     page_break(doc)
 
     add_heading(doc, "TABLE OF CONTENTS")
-    add_paragraph(doc, "The table of contents will be updated automatically as the report is revised in Microsoft Word.")
+    add_field_paragraph(doc, 'TOC \\o "1-3" \\h \\z \\u')
     add_heading(doc, "LIST OF FIGURES")
-    add_paragraph(doc, "Figure 1: System architecture of the Lokoja traffic decision support platform.")
-    add_paragraph(doc, "Figure 2: Permutation feature importance for the selected regression model.")
-    add_paragraph(doc, "Figure 3: Partial dependence plots showing average marginal feature effects.")
-    add_paragraph(doc, "Figure 4: LIME local explanation for a sample regression prediction.")
-    add_paragraph(doc, "Figure 5: SHAP summary chart using mean absolute contribution values.")
-    add_paragraph(doc, "Figure 6: Responsive frontend dashboard overview of the Lokoja traffic decision support interface.")
-    add_paragraph(doc, "Figure 7: Prediction output view showing the regression result and derived congestion band.")
-    add_paragraph(doc, "Figure 8: Scenario comparison view showing what-if simulation results.")
-    add_paragraph(doc, "Figure 9: Analytics section of the frontend showing model insight visualization.")
+    add_field_paragraph(doc, 'TOC \\h \\z \\c "Figure"')
     add_heading(doc, "LIST OF TABLES")
-    add_paragraph(doc, "Table 1: Dataset feature summary.")
-    add_paragraph(doc, "Table 2: Software modules and implementation responsibilities.")
-    add_paragraph(doc, "Table 3: Regression performance comparison.")
-    add_paragraph(doc, "Table 4: Congestion thresholds derived from predicted traffic volume.")
-    add_paragraph(doc, "Table 5: Integration and validation test summary.")
+    add_field_paragraph(doc, 'TOC \\h \\z \\c "Table"')
     add_heading(doc, "LIST OF ABBREVIATIONS")
     add_paragraph(doc, "API - Application Programming Interface")
     add_paragraph(doc, "ML - Machine Learning")
@@ -406,7 +566,7 @@ def build_document():
     add_heading(doc, "3.3 Data Source / Data Collection", level=2)
     add_paragraph(
         doc,
-        "The project uses the dataset stored in traffic_pred_dataset_updated.csv. The dataset contains 1,000 records and includes contextual variables such as hour, day of week, weekend status, location, road type, weather, road condition, vehicle mix, and near-commercial-hub indicator. The `traffic_volume` column is used as the regression target, while the legacy `congestion_level` column is retained only as a contextual dataset field and not as the direct model target. It is important to note that this dataset is synthetic. As a result, the current phase of the study focuses on validating the system design, machine learning pipeline, and interpretation workflow rather than claiming final real-world traffic forecasting accuracy for Lokoja.",
+        f"The project uses the dataset stored in traffic_pred_dataset_updated.csv. The dataset contains {row_count:,} records and includes contextual variables such as hour, day of week, weekend status, location, road type, weather, road condition, vehicle mix, and near-commercial-hub indicator. The `traffic_volume` column is used as the regression target, while the legacy `congestion_level` column is retained only as a contextual dataset field and not as the direct model target. It is important to note that this dataset is synthetic. As a result, the current phase of the study focuses on validating the system design, machine learning pipeline, and interpretation workflow rather than claiming final real-world traffic forecasting accuracy for Lokoja.",
     )
     add_heading(doc, "3.3.1 Exploratory Data Analysis", level=2)
     add_paragraph(
@@ -415,7 +575,7 @@ def build_document():
     )
     add_paragraph(
         doc,
-        "A notable property of the synthetic dataset is that the congestion classes represented in the legacy `congestion_level` field are almost perfectly balanced, with approximately 340 High cases, 330 Medium cases, and 330 Low cases. Although these classes are no longer used as the direct machine learning target, their balance is still analytically useful because it suggests that the synthetic data generation process was designed to avoid severe category skew. In practical terms, this means the corresponding traffic-volume distribution likely covers low, medium, and high traffic situations in a comparatively even way.",
+        f"A notable property of the synthetic dataset is that the congestion classes represented in the legacy `congestion_level` field are comparatively well distributed, with approximately {high_total} High cases, {medium_total} Medium cases, and {low_total} Low cases. Although these classes are no longer used as the direct machine learning target, their spread is still analytically useful because it suggests that the synthetic data generation process was designed to avoid severe category skew. In practical terms, this means the corresponding traffic-volume distribution likely covers low, medium, and high traffic situations in a comparatively even way.",
     )
     add_paragraph(
         doc,
@@ -424,6 +584,15 @@ def build_document():
     add_paragraph(
         doc,
         "The exploratory analysis also helped justify the regression formulation. The observed traffic-volume range extends from approximately 8.23 to 223.23, which provides a sufficiently broad continuous target for regression modeling. Instead of treating congestion bands as the primary target, the system now predicts this continuous volume value and then interprets it with threshold-based ranges. This approach preserves more information from the data and makes later analysis more defensible because qualitative labels are derived from an underlying quantitative estimate.",
+    )
+    add_paragraph(
+        doc,
+        "The first code excerpt below shows the structure of the preprocessing pipeline used to prepare mixed traffic features before regression training.",
+    )
+    add_code_snippet(
+        doc,
+        "Code Snippet 1: Preprocessing pipeline for numerical and categorical traffic features.",
+        """NUMERIC_FEATURES = [\n    \"hour\", \"day_of_week\", \"is_weekend\",\n    \"road_condition\", \"near_commercial_hub\",\n]\nCATEGORICAL_FEATURES = [\"location\", \"road_type\", \"weather\", \"vehicle_mix\"]\n\nreturn ColumnTransformer(\n    transformers=[\n        (\"numeric\", Pipeline([\n            (\"imputer\", SimpleImputer(strategy=\"median\")),\n            (\"scaler\", StandardScaler()),\n        ]), NUMERIC_FEATURES),\n        (\"categorical\", Pipeline([\n            (\"imputer\", SimpleImputer(strategy=\"most_frequent\")),\n            (\"onehot\", OneHotEncoder(handle_unknown=\"ignore\")),\n        ]), CATEGORICAL_FEATURES),\n    ]\n)""",
     )
     add_table(
         doc,
@@ -442,11 +611,11 @@ def build_document():
         ],
         [1.4, 1.2, 3.7],
     )
-    add_paragraph(doc, "Table 1: Dataset feature summary.")
+    add_caption(doc, "Table", "Table 1: Dataset feature summary.", centered=False)
     add_heading(doc, "3.4 Population and Sample Size", level=2)
     add_paragraph(
         doc,
-        "The effective population for the model development stage consists of all valid records available in the working dataset. The current sample size is 1,000 observations. During training, the data is split into training and testing subsets using an 80:20 proportion for model evaluation.",
+        f"The effective population for the model development stage consists of all valid records available in the working dataset. The current sample size is {row_count:,} observations. During training, the data is split into training and testing subsets using an 80:20 proportion for model evaluation.",
     )
     add_heading(doc, "3.5 System Architecture / Model Design", level=2)
     add_paragraph(
@@ -467,10 +636,19 @@ def build_document():
         doc,
         "An important design decision in the pipeline is the derivation of is_weekend from day_of_week when the value is not explicitly provided by the caller. This makes the input interface simpler while preserving the feature's analytical usefulness. The same service also normalizes request values before prediction, which ensures that the backend and future frontend can consume a consistent machine learning contract.",
     )
+    add_paragraph(
+        doc,
+        "The next excerpt highlights the regression-oriented interpretation logic that was introduced after supervisory review.",
+    )
+    add_code_snippet(
+        doc,
+        "Code Snippet 2: Threshold derivation and congestion-band mapping.",
+        """def derive_congestion_thresholds(dataset):\n    low_upper = float(dataset[\"traffic_volume\"].quantile(0.33))\n    medium_upper = float(dataset[\"traffic_volume\"].quantile(0.66))\n    return {\n        \"low_max\": round(low_upper, 2),\n        \"medium_max\": round(medium_upper, 2),\n    }\n\n\ndef volume_to_congestion_level(volume, thresholds):\n    if volume <= thresholds[\"low_max\"]:\n        return \"Low\"\n    if volume <= thresholds[\"medium_max\"]:\n        return \"Medium\"\n    return \"High\"""",
+    )
     add_heading(doc, "3.6.2 Threshold Derivation for Congestion Bands", level=2)
     add_paragraph(
         doc,
-        "After the regression model predicts traffic volume, the value is interpreted using threshold bands learned from the dataset profile. This makes congestion classification a post-processing stage rather than the direct learning target. In the present system, values less than or equal to 56.23 are treated as Low congestion, values above 56.23 and up to 98.32 are treated as Medium congestion, and values above 98.32 are treated as High congestion. The thresholding layer is central to the system's decision-support role because it translates technical regression output into a user-friendly summary.",
+        f"After the regression model predicts traffic volume, the value is interpreted using threshold bands learned from the dataset profile. This makes congestion classification a post-processing stage rather than the direct learning target. In the present system, values less than or equal to {congestion_thresholds.get('low_max', 0):.2f} are treated as Low congestion, values above {congestion_thresholds.get('low_max', 0):.2f} and up to {congestion_thresholds.get('medium_max', 0):.2f} are treated as Medium congestion, and values above {congestion_thresholds.get('medium_max', 0):.2f} are treated as High congestion. The thresholding layer is central to the system's decision-support role because it translates technical regression output into a user-friendly summary.",
     )
     add_heading(doc, "3.7 Evaluation Metrics", level=2)
     add_paragraph(
@@ -510,6 +688,15 @@ def build_document():
         doc,
         "The full system is organized as a modular three-tier platform. The React frontend is responsible for user input, scenario simulation, and visualization. The Spring Boot backend exposes stable application endpoints and handles integration concerns between the user-facing layer and the machine learning service. The Python service performs dataset-driven validation, preprocessing, model loading, training, insights generation, and prediction explanation. This separation of responsibilities improves maintainability and also makes the work easier to defend academically because each layer has a clearly defined role.",
     )
+    add_paragraph(
+        doc,
+        "The implementation is also easier to evaluate when representative source excerpts are presented. The following training excerpt shows how the baseline model is compared with the main ensemble regressor before the better-performing artifact is persisted.",
+    )
+    add_code_snippet(
+        doc,
+        "Code Snippet 3: Model training, comparison, and selection workflow.",
+        """baseline_model.fit(X_train, y_train)\nmain_model.fit(X_train, y_train)\n\nbaseline_predictions = baseline_model.predict(X_test)\npredictions = main_model.predict(X_test)\nbaseline_rmse = float(mean_squared_error(y_test, baseline_predictions) ** 0.5)\nrandom_forest_rmse = float(mean_squared_error(y_test, predictions) ** 0.5)\n\nselected_model_name = \"RandomForestRegressor\"\nselected_model = main_model\nselected_predictions = predictions\nif baseline_rmse < random_forest_rmse:\n    selected_model_name = \"LinearRegression\"\n    selected_model = baseline_model\n    selected_predictions = baseline_predictions""",
+    )
     arch = doc.add_paragraph()
     arch.alignment = WD_ALIGN_PARAGRAPH.CENTER
     arch.paragraph_format.line_spacing = 1.5
@@ -524,10 +711,7 @@ def build_document():
     ]:
         run = arch.add_run(line + "\n")
         set_run_font(run, size=11, bold=False)
-    cap = doc.add_paragraph()
-    cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    cap_run = cap.add_run("Figure 1: System architecture of the Lokoja traffic decision support platform.")
-    set_run_font(cap_run, size=11, italic=True)
+    add_caption(doc, "Figure", "Figure 1: System architecture of the Lokoja traffic decision support platform.", centered=True)
     add_paragraph(
         doc,
         "Beyond the service modules, the frontend now presents the project as an actual decision-support dashboard rather than a raw prediction form. The final interface organizes the system into overview, prediction, analytics, and system-note sections, with compact section navigation on smaller screens and a persistent sidebar pattern on larger screens. This makes the application more appropriate for academic demonstration, repeated scenario testing, and supervisor review.",
@@ -553,28 +737,28 @@ def build_document():
         ],
         [1.8, 3.8, 1.3],
     )
-    add_paragraph(doc, "Table 2: Software modules and implementation responsibilities.")
+    add_caption(doc, "Table", "Table 2: Software modules and implementation responsibilities.", centered=False)
     add_heading(doc, "4.3 Results Presentation", level=2)
     add_paragraph(doc, "Current regression results are summarized as follows:")
-    add_paragraph(doc, "Selected model: RandomForestRegressor")
-    add_paragraph(doc, "Mean Absolute Error (MAE): 10.60")
-    add_paragraph(doc, "Root Mean Squared Error (RMSE): 13.67")
-    add_paragraph(doc, "R-squared (R²): 0.893")
-    add_paragraph(doc, "Baseline RMSE: 35.58")
+    add_paragraph(doc, f"Selected model: {selected_model}")
+    add_paragraph(doc, f"Mean Absolute Error (MAE): {selected_mae:.2f}")
+    add_paragraph(doc, f"Root Mean Squared Error (RMSE): {selected_rmse:.2f}")
+    add_paragraph(doc, f"R-squared (R²): {selected_r2:.3f}")
+    add_paragraph(doc, f"Baseline RMSE: {baseline_rmse:.2f}")
     add_paragraph(doc, "The dataset-derived congestion thresholds used after prediction are:")
-    add_paragraph(doc, "Low congestion: predicted traffic volume less than or equal to 56.23")
-    add_paragraph(doc, "Medium congestion: predicted traffic volume greater than 56.23 and less than or equal to 98.32")
-    add_paragraph(doc, "High congestion: predicted traffic volume above 98.32")
+    add_paragraph(doc, f"Low congestion: predicted traffic volume less than or equal to {congestion_thresholds.get('low_max', 0):.2f}")
+    add_paragraph(doc, f"Medium congestion: predicted traffic volume greater than {congestion_thresholds.get('low_max', 0):.2f} and less than or equal to {congestion_thresholds.get('medium_max', 0):.2f}")
+    add_paragraph(doc, f"High congestion: predicted traffic volume above {congestion_thresholds.get('medium_max', 0):.2f}")
     add_table(
         doc,
         ["Model", "MAE", "RMSE", "R-squared"],
         [
             ["LinearRegression (baseline)", f"{metadata.get('baseline_mae', 0):.2f}", f"{metadata.get('baseline_rmse', 0):.2f}", f"{metadata.get('baseline_r2', 0):.3f}"],
-            ["RandomForestRegressor", f"{metadata.get('mae', 0):.2f}", f"{metadata.get('rmse', 0):.2f}", f"{metadata.get('r2', 0):.3f}"],
+            [selected_model, f"{metadata.get('mae', 0):.2f}", f"{metadata.get('rmse', 0):.2f}", f"{metadata.get('r2', 0):.3f}"],
         ],
         [2.5, 1.0, 1.0, 1.1],
     )
-    add_paragraph(doc, "Table 3: Regression performance comparison.")
+    add_caption(doc, "Table", "Table 3: Regression performance comparison.", centered=False)
     add_table(
         doc,
         ["Band", "Condition"],
@@ -585,10 +769,19 @@ def build_document():
         ],
         [1.3, 4.3],
     )
-    add_paragraph(doc, "Table 4: Congestion thresholds derived from predicted traffic volume.")
+    add_caption(doc, "Table", "Table 4: Congestion thresholds derived from predicted traffic volume.", centered=False)
     add_paragraph(
         doc,
         "From the user-facing perspective, the application translates these regression outputs into a clean prediction panel. The screen shows the predicted traffic volume, the threshold boundaries, the derived congestion level, and explanatory statements that help a commuter understand why a case is classified as risky or relatively safe.",
+    )
+    add_paragraph(
+        doc,
+        "At the service boundary, the prediction API is intentionally compact. The code excerpt below shows the endpoint responsible for receiving validated input and returning the structured regression response.",
+    )
+    add_code_snippet(
+        doc,
+        "Code Snippet 4: FastAPI prediction endpoint for the ML service.",
+        """@app.post(\"/predict\", response_model=PredictionResponse)\ndef predict(payload: PredictionInput) -> dict:\n    try:\n        return predictor_service.predict(payload)\n    except FileNotFoundError as exc:\n        raise HTTPException(status_code=503, detail=str(exc)) from exc\n    except ValueError as exc:\n        raise HTTPException(status_code=400, detail=str(exc)) from exc""",
     )
     add_figure(
         doc,
@@ -635,6 +828,14 @@ def build_document():
         doc,
         "It is also useful to interpret the lower-ranked variables carefully. Features such as near_commercial_hub, road_type, vehicle_mix, and road_condition appear with much smaller permutation scores, while a few values are slightly negative. In model-interpretation terms, a near-zero or slightly negative permutation score does not automatically mean that the feature is useless in all circumstances; rather, it suggests that within the current fitted model and synthetic data generation process, the feature contributes little additional predictive signal beyond what stronger features already explain. This is an important distinction in an academic report because it avoids overstating weak variables as irrelevant when they may still matter under a richer real-world dataset.",
     )
+    add_paragraph(
+        doc,
+        "Weather deserves especially careful interpretation because, from a practical transport perspective, one might expect rain or adverse conditions to have a much stronger impact on traffic movement. However, the current interpretation results suggest that weather is weaker than hour, location, and weekend-related timing in the fitted model. The most defensible explanation is not that weather is unimportant in real life, but that the synthetic dataset assigns stronger structural variation to temporal and spatial features than to weather. In other words, the model is faithfully learning the relative signal strengths embedded in the synthetic data generation process.",
+    )
+    add_paragraph(
+        doc,
+        "This point is academically important because it illustrates a limitation of synthetic data. A model trained on artificial records cannot infer a stronger weather effect than the one encoded in those records. If the synthetic generation logic applies only a modest adjustment for rain, then the learned feature importance for weather will also remain modest. The report should therefore distinguish between the behavior of the current model on the simulated dataset and the likely importance of weather under real Lokoja traffic observations, where rainfall, visibility reduction, and road-surface conditions could plausibly exert a larger influence.",
+    )
     if feature_importance:
         ranked = ", ".join(item["feature"] for item in feature_importance[:5])
         add_paragraph(doc, f"The top ranked features from the current permutation importance analysis are {ranked}.")
@@ -668,7 +869,7 @@ def build_document():
     )
     add_paragraph(
         doc,
-        "Another important layer of interpretation in this project is the post-prediction transformation from traffic volume to congestion class. This step is not merely a cosmetic relabeling. It is the decision-support bridge that converts a continuous regression output into a form that commuters and non-technical stakeholders can understand quickly. The thresholds 56.23 and 98.32 partition the predicted values into low, medium, and high traffic states. In academic terms, this creates a two-stage reasoning chain: first the model estimates a quantitative transport intensity, and then the system maps that estimate into a qualitative risk band. This architecture is stronger than directly predicting labels because it preserves quantitative information for analysis while still supporting simple user communication.",
+        f"Another important layer of interpretation in this project is the post-prediction transformation from traffic volume to congestion class. This step is not merely a cosmetic relabeling. It is the decision-support bridge that converts a continuous regression output into a form that commuters and non-technical stakeholders can understand quickly. The thresholds {congestion_thresholds.get('low_max', 0):.2f} and {congestion_thresholds.get('medium_max', 0):.2f} partition the predicted values into low, medium, and high traffic states. In academic terms, this creates a two-stage reasoning chain: first the model estimates a quantitative transport intensity, and then the system maps that estimate into a qualitative risk band. This architecture is stronger than directly predicting labels because it preserves quantitative information for analysis while still supporting simple user communication.",
     )
     add_paragraph(
         doc,
@@ -687,6 +888,10 @@ def build_document():
     add_paragraph(
         doc,
         "From a discussion standpoint, the interpretation results support a coherent story about the synthetic Lokoja traffic environment. Time-of-day appears to be the main organizing signal, specific zones carry different congestion burdens, and weekend or weekday context modifies expected traffic behavior. The model therefore seems to capture an intelligible structure rather than random noise. Nonetheless, the appropriate academic caution remains that these insights describe the behavior of the fitted system on a synthetic dataset, not verified ground-truth traffic operations in Lokoja. The interpretability layer strengthens trust in the prototype, but it does not remove the need for future field data collection and validation.",
+    )
+    add_paragraph(
+        doc,
+        "A related discussion point concerns the comparatively weak effect of weather in the current interpretation outputs. While common transport intuition suggests that weather should materially affect congestion, the present model ranks it below stronger temporal and locational variables. This should not be interpreted as evidence that weather is generally unimportant for traffic management. Rather, it suggests that the synthetic dataset used in this project encodes weather with a smaller marginal effect than hour-of-day and place-based traffic patterns. This is a legitimate outcome for the current prototype, but it also highlights why future work should revisit feature influence after collecting real-world Lokoja traffic observations.",
     )
     add_paragraph(
         doc,
@@ -735,7 +940,7 @@ def build_document():
         ],
         [1.4, 3.8, 1.3],
     )
-    add_paragraph(doc, "Table 5: Integration and validation test summary.")
+    add_caption(doc, "Table", "Table 5: Integration and validation test summary.", centered=False)
     add_heading(doc, "4.5 Discussion", level=2)
     add_paragraph(
         doc,
@@ -774,10 +979,20 @@ def build_document():
     page_break(doc)
 
     add_heading(doc, "REFERENCES")
-    add_paragraph(
-        doc,
-        "This section is intentionally left as a working placeholder and will be updated with verified academic references used in the literature review and methodology chapters. The final version should include current literature on traffic prediction, intelligent transportation systems, regression modeling, random forest learning, explainable artificial intelligence, and decision support systems.",
-    )
+    references = [
+        "Breiman, L. (2001). Random forests. Machine Learning, 45(1), 5-32.",
+        "Friedman, J. H. (2001). Greedy function approximation: A gradient boosting machine. The Annals of Statistics, 29(5), 1189-1232.",
+        "Lundberg, S. M., & Lee, S.-I. (2017). A unified approach to interpreting model predictions. Advances in Neural Information Processing Systems, 30.",
+        'Ribeiro, M., Singh, S., & Guestrin, C. (2016). "Why should I trust you?": Explaining the predictions of any classifier. In Proceedings of the 2016 Conference of the North American Chapter of the Association for Computational Linguistics: Demonstrations (pp. 97-101). Association for Computational Linguistics.',
+        "Molnar, C. (2022). Interpretable machine learning: A guide for making black box models explainable (2nd ed.). Christoph Molnar.",
+        "Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., & Duchesnay, E. (2011). Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12, 2825-2830.",
+        "McKinney, W. (2010). Data structures for statistical computing in Python. In Proceedings of the 9th Python in Science Conference (pp. 56-61).",
+        "Medina-Salgado, B., Sanchez-DelaCruz, E., Pozos-Parra, P., & Sierra, J. E. (2022). Urban traffic flow prediction techniques: A review. Sustainable Computing: Informatics and Systems, 35, 100739.",
+        "Sayed, S. A., Abdel-Hamid, Y., & Hefny, H. A. (2023). Artificial intelligence-based traffic flow prediction: A comprehensive review. Journal of Electrical Systems and Information Technology, 10, 13.",
+        "Sharda, R., Delen, D., & Turban, E. (2011). Business intelligence and analytics: Systems for decision support (9th ed.). Pearson.",
+    ]
+    for reference in references:
+        add_reference(doc, reference)
 
     page_break(doc)
 
@@ -798,7 +1013,7 @@ def build_document():
     )
     add_paragraph(
         doc,
-        'Sample backend response summary: predictedTrafficVolume = 164.85, congestionLevel = "High", with threshold values low_max = 56.23 and medium_max = 98.32, plus explanation statements and normalized model input.',
+        f'Sample backend response summary: predictedTrafficVolume = 164.85, congestionLevel = "High", with threshold values low_max = {congestion_thresholds.get("low_max", 0):.2f} and medium_max = {congestion_thresholds.get("medium_max", 0):.2f}, plus explanation statements and normalized model input.',
     )
     add_heading(doc, "Appendix C: Current Interpretation Artifacts", level=2)
     add_paragraph(
@@ -809,6 +1024,11 @@ def build_document():
     add_paragraph(
         doc,
         "The frontend screenshots captured during live verification are embedded in Chapter Four and summarize the interface states used for testing and presentation. They include the dashboard overview, the prediction output state, the scenario comparison state, and the analytics section. These images help demonstrate that the project has moved beyond backend-only functionality into a coherent end-to-end application experience.",
+    )
+    add_heading(doc, "Appendix E: Representative Source Code Excerpts", level=2)
+    add_paragraph(
+        doc,
+        "Representative code excerpts were included in the main body of the report to support the explanation of preprocessing, regression-based congestion interpretation, model selection, and API integration. These excerpts were intentionally kept short so that the report remains analytical rather than becoming a full source listing.",
     )
 
     doc.save(OUTPUT_PATH)

@@ -1,7 +1,3 @@
-artifacts/
-__pycache__/
-*.pyc
-
 # Python
 .venv/
 __pycache__/
@@ -18,13 +14,24 @@ backend/target/
 # Logs
 *.log
 
-# Generated artifacts
+# Generated artifacts to keep local-only
+artifacts/backend*.log
+artifacts/frontend*.log
+artifacts/ml*.log
+artifacts/*stderr*.log
+artifacts/*stdout*.log
+artifacts/*integration*.log
+artifacts/e2e_*.json
+artifacts/e2e_*.log
 artifacts/report_render_with_screens/
-artifacts/*.log
+artifacts/report_screenshots/
+report_render/
+report_render_deepened/
+report_render_updated/
+report_review/
 
 # OS/editor
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
-

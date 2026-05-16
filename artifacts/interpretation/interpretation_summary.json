@@ -1,0 +1,62 @@
+{
+  "feature_importance": {
+    "top_features": [
+      {
+        "feature": "hour",
+        "importance": 34.953784510903496
+      },
+      {
+        "feature": "near_commercial_hub",
+        "importance": 10.276953761263673
+      },
+      {
+        "feature": "road_type",
+        "importance": 7.373706115922881
+      },
+      {
+        "feature": "weather",
+        "importance": 5.189768048424034
+      },
+      {
+        "feature": "vehicle_mix",
+        "importance": 2.8269399615254303
+      }
+    ],
+    "plot": "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\feature_importance.png",
+    "status": "generated"
+  },
+  "pdp": {
+    "status": "generated",
+    "plots": [
+      "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\partial_dependence.png"
+    ],
+    "summary": [
+      "Partial dependence was generated for hour to show its average marginal effect on predicted traffic volume.",
+      "Partial dependence was generated for near_commercial_hub to show its average marginal effect on predicted traffic volume."
+    ]
+  },
+  "lime": {
+    "status": "generated",
+    "plot": "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\lime_explanation.png",
+    "summary": [
+      "14.00 < hour <= 18.00: 45.815",
+      "0.00 < near_commercial_hub <= 1.00: 30.008",
+      "weather=Clear: -20.493",
+      "road_type=Urban: 18.158",
+      "vehicle_mix=Commercial: 9.109",
+      "road_condition <= 1.00: -6.927"
+    ]
+  },
+  "shap": {
+    "status": "generated",
+    "plot": "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\shap_summary.png",
+    "summary": [
+      "hour: 30.387",
+      "near_commercial_hub: 16.823",
+      "road_type: 11.697",
+      "weather: 8.884",
+      "location: 6.885",
+      "vehicle_mix: 6.714"
+    ]
+  }
+}

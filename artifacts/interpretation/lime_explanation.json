@@ -1,0 +1,10 @@
+{
+  "summary": [
+    "14.00 < hour <= 18.00: 45.815",
+    "0.00 < near_commercial_hub <= 1.00: 30.008",
+    "weather=Clear: -20.493",
+    "road_type=Urban: 18.158",
+    "vehicle_mix=Commercial: 9.109",
+    "road_condition <= 1.00: -6.927"
+  ]
+}

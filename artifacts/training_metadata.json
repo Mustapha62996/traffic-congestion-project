@@ -1,0 +1,395 @@
+{
+  "selected_model": "RandomForestRegressor",
+  "mae": 10.32091697288358,
+  "rmse": 12.87799736746841,
+  "r2": 0.9184524836160395,
+  "baseline_mae": 27.41920043794791,
+  "baseline_rmse": 31.321012436047226,
+  "baseline_r2": 0.5176240369316693,
+  "feature_importance": [
+    {
+      "feature": "hour",
+      "importance": 34.953784510903496
+    },
+    {
+      "feature": "near_commercial_hub",
+      "importance": 10.276953761263673
+    },
+    {
+      "feature": "road_type",
+      "importance": 7.373706115922881
+    },
+    {
+      "feature": "weather",
+      "importance": 5.189768048424034
+    },
+    {
+      "feature": "vehicle_mix",
+      "importance": 2.8269399615254303
+    },
+    {
+      "feature": "location",
+      "importance": 2.7765898196525978
+    },
+    {
+      "feature": "road_condition",
+      "importance": 1.8206061515333154
+    },
+    {
+      "feature": "day_of_week",
+      "importance": 0.43338811085079565
+    },
+    {
+      "feature": "is_weekend",
+      "importance": 0.35636414865175237
+    }
+  ],
+  "interpretation": {
+    "feature_importance": {
+      "top_features": [
+        {
+          "feature": "hour",
+          "importance": 34.953784510903496
+        },
+        {
+          "feature": "near_commercial_hub",
+          "importance": 10.276953761263673
+        },
+        {
+          "feature": "road_type",
+          "importance": 7.373706115922881
+        },
+        {
+          "feature": "weather",
+          "importance": 5.189768048424034
+        },
+        {
+          "feature": "vehicle_mix",
+          "importance": 2.8269399615254303
+        }
+      ],
+      "plot": "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\feature_importance.png",
+      "status": "generated"
+    },
+    "pdp": {
+      "status": "generated",
+      "plots": [
+        "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\partial_dependence.png"
+      ],
+      "summary": [
+        "Partial dependence was generated for hour to show its average marginal effect on predicted traffic volume.",
+        "Partial dependence was generated for near_commercial_hub to show its average marginal effect on predicted traffic volume."
+      ]
+    },
+    "lime": {
+      "status": "generated",
+      "plot": "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\lime_explanation.png",
+      "summary": [
+        "14.00 < hour <= 18.00: 45.815",
+        "0.00 < near_commercial_hub <= 1.00: 30.008",
+        "weather=Clear: -20.493",
+        "road_type=Urban: 18.158",
+        "vehicle_mix=Commercial: 9.109",
+        "road_condition <= 1.00: -6.927"
+      ]
+    },
+    "shap": {
+      "status": "generated",
+      "plot": "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\interpretation\\shap_summary.png",
+      "summary": [
+        "hour: 30.387",
+        "near_commercial_hub: 16.823",
+        "road_type: 11.697",
+        "weather: 8.884",
+        "location: 6.885",
+        "vehicle_mix: 6.714"
+      ]
+    }
+  },
+  "dataset_profile": {
+    "row_count": 2000,
+    "categorical_options": {
+      "location": [
+        "Adankolo",
+        "Felele",
+        "Ganaja",
+        "Kabba_Junction",
+        "Lokoja_Central_OldMarket",
+        "Nataco",
+        "Phase_I",
+        "Zango"
+      ],
+      "road_type": [
+        "Highway",
+        "Residential",
+        "Urban"
+      ],
+      "weather": [
+        "Clear",
+        "Rain"
+      ],
+      "vehicle_mix": [
+        "Commercial",
+        "Mixed",
+        "Private"
+      ]
+    },
+    "numeric_ranges": {
+      "hour": {
+        "min": 0.0,
+        "max": 23.0
+      },
+      "day_of_week": {
+        "min": 0.0,
+        "max": 6.0
+      },
+      "is_weekend": {
+        "min": 0.0,
+        "max": 1.0
+      },
+      "road_condition": {
+        "min": 1.0,
+        "max": 3.0
+      },
+      "traffic_volume": {
+        "min": 8.0,
+        "max": 225.0
+      },
+      "near_commercial_hub": {
+        "min": 0.0,
+        "max": 1.0
+      }
+    },
+    "defaults": {
+      "road_type": "Urban",
+      "vehicle_mix": "Mixed",
+      "near_commercial_hub": 1,
+      "is_weekend": 0
+    },
+    "congestion_thresholds": {
+      "low_max": 103.2,
+      "medium_max": 146.95
+    }
+  },
+  "congestion_thresholds": {
+    "low_max": 103.2,
+    "medium_max": 146.95
+  },
+  "peak_hours": [
+    19,
+    18,
+    17,
+    16,
+    20
+  ],
+  "hourly_trends": [
+    {
+      "hour": 0,
+      "High": 0,
+      "Low": 32,
+      "Medium": 7
+    },
+    {
+      "hour": 1,
+      "High": 0,
+      "Low": 33,
+      "Medium": 6
+    },
+    {
+      "hour": 2,
+      "High": 0,
+      "Low": 32,
+      "Medium": 4
+    },
+    {
+      "hour": 3,
+      "High": 0,
+      "Low": 18,
+      "Medium": 2
+    },
+    {
+      "hour": 4,
+      "High": 0,
+      "Low": 22,
+      "Medium": 5
+    },
+    {
+      "hour": 5,
+      "High": 0,
+      "Low": 30,
+      "Medium": 6
+    },
+    {
+      "hour": 6,
+      "High": 23,
+      "Low": 10,
+      "Medium": 47
+    },
+    {
+      "hour": 7,
+      "High": 42,
+      "Low": 34,
+      "Medium": 60
+    },
+    {
+      "hour": 8,
+      "High": 40,
+      "Low": 27,
+      "Medium": 48
+    },
+    {
+      "hour": 9,
+      "High": 34,
+      "Low": 17,
+      "Medium": 35
+    },
+    {
+      "hour": 10,
+      "High": 1,
+      "Low": 38,
+      "Medium": 28
+    },
+    {
+      "hour": 11,
+      "High": 0,
+      "Low": 37,
+      "Medium": 32
+    },
+    {
+      "hour": 12,
+      "High": 6,
+      "Low": 39,
+      "Medium": 38
+    },
+    {
+      "hour": 13,
+      "High": 2,
+      "Low": 40,
+      "Medium": 47
+    },
+    {
+      "hour": 14,
+      "High": 6,
+      "Low": 46,
+      "Medium": 38
+    },
+    {
+      "hour": 15,
+      "High": 7,
+      "Low": 44,
+      "Medium": 39
+    },
+    {
+      "hour": 16,
+      "High": 98,
+      "Low": 11,
+      "Medium": 42
+    },
+    {
+      "hour": 17,
+      "High": 97,
+      "Low": 5,
+      "Medium": 27
+    },
+    {
+      "hour": 18,
+      "High": 136,
+      "Low": 8,
+      "Medium": 47
+    },
+    {
+      "hour": 19,
+      "High": 112,
+      "Low": 3,
+      "Medium": 27
+    },
+    {
+      "hour": 20,
+      "High": 74,
+      "Low": 8,
+      "Medium": 31
+    },
+    {
+      "hour": 21,
+      "High": 2,
+      "Low": 47,
+      "Medium": 27
+    },
+    {
+      "hour": 22,
+      "High": 0,
+      "Low": 43,
+      "Medium": 6
+    },
+    {
+      "hour": 23,
+      "High": 0,
+      "Low": 36,
+      "Medium": 11
+    }
+  ],
+  "location_patterns": [
+    {
+      "location": "Adankolo",
+      "High": 43,
+      "Low": 102,
+      "Medium": 78
+    },
+    {
+      "location": "Felele",
+      "High": 54,
+      "Low": 84,
+      "Medium": 84
+    },
+    {
+      "location": "Ganaja",
+      "High": 84,
+      "Low": 67,
+      "Medium": 88
+    },
+    {
+      "location": "Kabba_Junction",
+      "High": 138,
+      "Low": 45,
+      "Medium": 101
+    },
+    {
+      "location": "Lokoja_Central_OldMarket",
+      "High": 219,
+      "Low": 36,
+      "Medium": 112
+    },
+    {
+      "location": "Nataco",
+      "High": 120,
+      "Low": 62,
+      "Medium": 102
+    },
+    {
+      "location": "Phase_I",
+      "High": 10,
+      "Low": 147,
+      "Medium": 43
+    },
+    {
+      "location": "Zango",
+      "High": 12,
+      "Low": 117,
+      "Medium": 52
+    }
+  ],
+  "model_path": "C:\\Users\\USER\\Desktop\\traffic_congestion_project\\artifacts\\traffic_congestion_model.joblib",
+  "target_column": "traffic_volume",
+  "feature_columns": [
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "location",
+    "road_type",
+    "weather",
+    "road_condition",
+    "vehicle_mix",
+    "near_commercial_hub"
+  ],
+  "model_name": "RandomForestRegressor"
+}
