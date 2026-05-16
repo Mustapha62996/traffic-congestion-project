@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://your-backend-url.up.railway.app/api/:path*"
+      "destination": "https://traffic-congestion-project-production-d3ac.up.railway.app/api/:path*"
     }
   ]
 }
