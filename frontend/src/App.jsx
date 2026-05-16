@@ -290,7 +290,8 @@ function App() {
   const [insights, setInsights] = useState(null);
   const [loadingPrediction, setLoadingPrediction] = useState(false);
   const [loadingInsights, setLoadingInsights] = useState(true);
-  const [notice, setNotice] = useState("");
+  const [usingFallbackInsights, setUsingFallbackInsights] = useState(false);
+  const [usingFallbackPrediction, setUsingFallbackPrediction] = useState(false);
 
   useEffect(() => {
     const loadInsights = async () => {
@@ -301,9 +302,10 @@ function App() {
         }
         const data = await response.json();
         setInsights(data);
+        setUsingFallbackInsights(false);
       } catch (err) {
         setInsights(FALLBACK_INSIGHTS);
-        setNotice("Demo mode active: showing built-in insights because live services are unavailable.");
+        setUsingFallbackInsights(true);
       } finally {
         setLoadingInsights(false);
       }
@@ -408,7 +410,6 @@ function App() {
   const submitPrediction = async (event) => {
     event.preventDefault();
     setLoadingPrediction(true);
-    setNotice("");
 
     try {
       const response = await fetch("/api/predict", {
@@ -431,6 +432,7 @@ function App() {
       }
       setPrediction(data);
       setLastScenario({ ...form });
+      setUsingFallbackPrediction(false);
     } catch (err) {
       const data = buildDemoPrediction(form, thresholds);
       if (prediction && lastScenario) {
@@ -439,11 +441,21 @@ function App() {
       }
       setPrediction(data);
       setLastScenario({ ...form });
-      setNotice("Demo mode active: this prediction is using the built-in fallback because the live API is unavailable.");
+      setUsingFallbackPrediction(true);
     } finally {
       setLoadingPrediction(false);
     }
   };
+
+  const notice = useMemo(() => {
+    if (usingFallbackPrediction) {
+      return "Demo mode active: this prediction is using the built-in fallback because the live prediction API is unavailable.";
+    }
+    if (usingFallbackInsights) {
+      return "Live prediction is active. Analytics are using built-in fallback insights because the insights endpoint is unavailable.";
+    }
+    return "";
+  }, [usingFallbackInsights, usingFallbackPrediction]);
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
