@@ -1,6 +1,6 @@
 """5-fold cross-validation and hyperparameter sensitivity grid for the Lokoja traffic model.
 
-Place this file in the project's scripts/ folder and run from the project root:
+run from the project root:
     python scripts/cross_validate.py
 """
 from __future__ import annotations
